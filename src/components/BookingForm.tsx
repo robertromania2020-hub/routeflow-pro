@@ -1,0 +1,138 @@
+import { useState } from "react";
+import { z } from "zod";
+import { useLang, PHONE, PHONE_DISPLAY, WHATSAPP } from "@/contexts/LangContext";
+import { ALL_CITIES } from "@/data/cities";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+import { Phone, MessageCircle, Send } from "lucide-react";
+
+const schema = z.object({
+  customer_name: z.string().trim().min(2).max(100),
+  phone: z.string().trim().min(6).max(30),
+  departure_city: z.string().min(1),
+  destination_city: z.string().min(1),
+  transport_type: z.enum(["persons", "parcels", "auto"]),
+  message: z.string().max(1000).optional(),
+});
+
+const BookingForm = () => {
+  const { t, lang } = useLang();
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({
+    customer_name: "",
+    phone: "",
+    departure_city: "",
+    destination_city: "",
+    transport_type: "persons" as "persons" | "parcels" | "auto",
+    message: "",
+  });
+
+  const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = schema.safeParse(form);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message || t.booking.error);
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.from("bookings").insert({ ...parsed.data, language: lang });
+    setLoading(false);
+    if (error) {
+      toast.error(t.booking.error);
+      return;
+    }
+    toast.success(t.booking.success);
+    const typeLabel = { persons: t.booking.typePersons, parcels: t.booking.typeParcels, auto: t.booking.typeAuto }[form.transport_type];
+    const msg = `🚐 BGD-Trans — ${t.booking.title}%0A%0A👤 ${form.customer_name}%0A📞 ${form.phone}%0A📍 ${form.departure_city} → ${form.destination_city}%0A📦 ${typeLabel}%0A${form.message ? `💬 ${form.message}` : ""}`;
+    window.location.href = `https://wa.me/40769129126?text=${msg}`;
+  };
+
+  return (
+    <section id="booking" className="py-20 bg-gradient-to-br from-primary to-primary-glow text-primary-foreground">
+      <div className="container max-w-3xl">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">{t.booking.title}</h2>
+          <p className="text-primary-foreground/80 text-lg">{t.booking.subtitle}</p>
+        </div>
+
+        <form onSubmit={onSubmit} className="bg-card text-card-foreground rounded-2xl p-6 md:p-8 shadow-elegant space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <Label>{t.booking.name}</Label>
+              <Input value={form.customer_name} onChange={(e) => update("customer_name", e.target.value)} required maxLength={100} />
+            </div>
+            <div>
+              <Label>{t.booking.phone}</Label>
+              <Input type="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} required maxLength={30} />
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <Label>{t.booking.from}</Label>
+              <Select value={form.departure_city} onValueChange={(v) => update("departure_city", v)}>
+                <SelectTrigger><SelectValue placeholder={t.booking.selectCity} /></SelectTrigger>
+                <SelectContent className="max-h-72">
+                  {ALL_CITIES.map(({ country, city }) => (
+                    <SelectItem key={`${country}-${city}`} value={`${city}, ${country.replace(/^\S+\s/, "")}`}>{country.split(" ")[0]} {city}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>{t.booking.to}</Label>
+              <Select value={form.destination_city} onValueChange={(v) => update("destination_city", v)}>
+                <SelectTrigger><SelectValue placeholder={t.booking.selectCity} /></SelectTrigger>
+                <SelectContent className="max-h-72">
+                  {ALL_CITIES.map(({ country, city }) => (
+                    <SelectItem key={`${country}-${city}-d`} value={`${city}, ${country.replace(/^\S+\s/, "")}`}>{country.split(" ")[0]} {city}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <Label>{t.booking.type}</Label>
+            <Select value={form.transport_type} onValueChange={(v) => update("transport_type", v)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="persons">👥 {t.booking.typePersons}</SelectItem>
+                <SelectItem value="parcels">📦 {t.booking.typeParcels}</SelectItem>
+                <SelectItem value="auto">🚗 {t.booking.typeAuto}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label>{t.booking.message}</Label>
+            <Textarea value={form.message} onChange={(e) => update("message", e.target.value)} maxLength={1000} rows={3} />
+          </div>
+
+          <Button type="submit" disabled={loading} size="lg" className="w-full bg-accent hover:bg-accent-glow text-accent-foreground h-14 text-base shadow-accent">
+            <Send className="mr-2 h-5 w-5" /> {loading ? "..." : t.booking.submit}
+          </Button>
+        </form>
+
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center text-primary-foreground/90">
+          <a href={`tel:${PHONE}`} className="inline-flex items-center gap-2 hover:text-accent transition-smooth">
+            <Phone className="h-5 w-5" /> {t.booking.orCall} <strong>{PHONE_DISPLAY}</strong>
+          </a>
+          <span className="hidden sm:inline">•</span>
+          <a href={WHATSAPP} target="_blank" rel="noopener" className="inline-flex items-center gap-2 hover:text-accent transition-smooth">
+            <MessageCircle className="h-5 w-5" /> {t.booking.whatsappQuick}
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default BookingForm;
