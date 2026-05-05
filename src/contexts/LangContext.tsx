@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { translations, Lang } from "@/data/i18n";
 
-type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: typeof translations.ro };
+type Ctx = { lang: Lang; setLang: (l: Lang) => void; t: any };
 const LangContext = createContext<Ctx | undefined>(undefined);
 
 export const LangProvider = ({ children }: { children: ReactNode }) => {
