@@ -42,7 +42,15 @@ const BookingForm = () => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("bookings").insert({ ...parsed.data, language: lang });
+    const { error } = await supabase.from("bookings").insert({
+      customer_name: parsed.data.customer_name,
+      phone: parsed.data.phone,
+      departure_city: parsed.data.departure_city,
+      destination_city: parsed.data.destination_city,
+      transport_type: parsed.data.transport_type,
+      message: parsed.data.message,
+      language: lang,
+    });
     setLoading(false);
     if (error) {
       toast.error(t.booking.error);
