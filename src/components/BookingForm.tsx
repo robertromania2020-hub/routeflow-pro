@@ -43,26 +43,32 @@ const BookingForm = () => {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("bookings").insert({
-      customer_name: parsed.data.customer_name,
-      phone: parsed.data.phone,
-      departure_city: parsed.data.departure_city,
-      destination_city: parsed.data.destination_city,
-      transport_type: parsed.data.transport_type,
-      message: parsed.data.message,
-      language: lang,
-    });
-    setLoading(false);
-    if (error) {
-      toast.error(t.booking.error);
-      return;
+    const typeLabel = { persons: t.booking.typePersons, parcels: t.booking.typeParcels, auto: t.booking.typeAuto }[form.transport_type];
+    const msgText = `🚐 BGD-Trans — ${t.booking.title}\n\n👤 ${form.customer_name}\n📞 ${form.phone}\n📍 ${form.departure_city} → ${form.destination_city}\n📦 ${typeLabel}${form.message ? `\n💬 ${form.message}` : ""}`;
+    const waUrl = `https://wa.me/40769129126?text=${encodeURIComponent(msgText)}`;
+
+    try {
+      const { error } = await supabase.from("bookings").insert({
+        customer_name: parsed.data.customer_name,
+        phone: parsed.data.phone,
+        departure_city: parsed.data.departure_city,
+        destination_city: parsed.data.destination_city,
+        transport_type: parsed.data.transport_type,
+        message: parsed.data.message,
+        language: lang,
+      });
+      if (error) console.error("booking insert error:", error);
+    } catch (err) {
+      console.error("booking insert exception:", err);
     }
+    setLoading(false);
     toast.success(t.booking.success);
     trackEvent("booking_submit", { transport_type: form.transport_type });
     trackConversion(CONVERSIONS.booking, { value: 1.0, currency: "RON", transport_type: form.transport_type });
-    const typeLabel = { persons: t.booking.typePersons, parcels: t.booking.typeParcels, auto: t.booking.typeAuto }[form.transport_type];
-    const msg = `🚐 BGD-Trans — ${t.booking.title}%0A%0A👤 ${form.customer_name}%0A📞 ${form.phone}%0A📍 ${form.departure_city} → ${form.destination_city}%0A📦 ${typeLabel}%0A${form.message ? `💬 ${form.message}` : ""}`;
-    window.location.href = `https://wa.me/40769129126?text=${msg}`;
+
+    // Open WhatsApp — try new tab first, fallback to same tab
+    const win = window.open(waUrl, "_blank");
+    if (!win) window.location.href = waUrl;
   };
 
   return (
