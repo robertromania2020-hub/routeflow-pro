@@ -7,6 +7,7 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import RoutePage from "./pages/RoutePage.tsx";
 import Admin from "./pages/Admin.tsx";
+import Ghid from "./pages/Ghid.tsx";
 import { LangProvider } from "./contexts/LangContext.tsx";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/rute/:slug" element={<RoutePage />} />
+            <Route path="/ghid-transport-romania-europa" element={<Ghid />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -2,6 +2,7 @@ import heroImg from "@/assets/hero-van.jpg";
 import { useLang, PHONE, WHATSAPP } from "@/contexts/LangContext";
 import { Phone, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trackEvent, trackConversion, CONVERSIONS } from "@/lib/gtag";
 
 const Hero = () => {
   const { t } = useLang();
@@ -28,10 +29,10 @@ const Hero = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Button asChild size="lg" className="bg-accent hover:bg-accent-glow text-accent-foreground shadow-accent text-base h-14 px-8">
-              <a href={`tel:${PHONE}`}><Phone className="mr-2 h-5 w-5" /> {t.hero.callNow}</a>
+              <a href={`tel:${PHONE}`} onClick={() => { trackEvent("call_click", { location: "hero" }); trackConversion(CONVERSIONS.call); }}><Phone className="mr-2 h-5 w-5" /> {t.hero.callNow}</a>
             </Button>
             <Button asChild size="lg" className="bg-whatsapp hover:bg-whatsapp/90 text-whatsapp-foreground text-base h-14 px-8">
-              <a href={WHATSAPP} target="_blank" rel="noopener"><MessageCircle className="mr-2 h-5 w-5" /> {t.hero.whatsapp}</a>
+              <a href={WHATSAPP} target="_blank" rel="noopener" onClick={() => { trackEvent("whatsapp_click", { location: "hero" }); trackConversion(CONVERSIONS.whatsapp); }}><MessageCircle className="mr-2 h-5 w-5" /> {t.hero.whatsapp}</a>
             </Button>
           </div>
         </div>
