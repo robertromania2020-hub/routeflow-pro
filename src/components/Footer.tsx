@@ -19,6 +19,7 @@ const Footer = () => {
           <a href={WHATSAPP} target="_blank" rel="noopener" className="flex items-center gap-2 hover:text-accent transition-smooth"><MessageCircle className="h-4 w-4" /> {t.footer.whatsapp}</a>
         </div>
         <div className="text-sm text-primary-foreground/70">
+          <Link to="/blog" className="block hover:text-accent transition-smooth mb-2">Blog</Link>
           <Link to="/ghid-transport-romania-europa" className="block hover:text-accent transition-smooth mb-2">Ghid transport RO → Europa</Link>
           <Link to="/admin" className="hover:text-accent transition-smooth">Admin</Link>
         </div>
