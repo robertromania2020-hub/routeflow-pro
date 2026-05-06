@@ -8,6 +8,8 @@ import NotFound from "./pages/NotFound.tsx";
 import RoutePage from "./pages/RoutePage.tsx";
 import Admin from "./pages/Admin.tsx";
 import Ghid from "./pages/Ghid.tsx";
+import Blog from "./pages/Blog.tsx";
+import BlogPost from "./pages/BlogPost.tsx";
 import { LangProvider } from "./contexts/LangContext.tsx";
 
 const queryClient = new QueryClient();
@@ -23,6 +25,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/rute/:slug" element={<RoutePage />} />
             <Route path="/ghid-transport-romania-europa" element={<Ghid />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

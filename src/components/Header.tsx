@@ -34,6 +34,7 @@ const Header = () => {
           <button onClick={() => scrollTo("routes")} className="hover:text-accent transition-smooth">{t.nav.routes}</button>
           <button onClick={() => scrollTo("booking")} className="hover:text-accent transition-smooth">{t.nav.booking}</button>
           <button onClick={() => scrollTo("testimonials")} className="hover:text-accent transition-smooth">{t.nav.testimonials}</button>
+          <Link to="/blog" className="hover:text-accent transition-smooth">Blog</Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -64,6 +65,7 @@ const Header = () => {
             <button onClick={() => scrollTo("routes")} className="text-left py-2">{t.nav.routes}</button>
             <button onClick={() => scrollTo("booking")} className="text-left py-2">{t.nav.booking}</button>
             <button onClick={() => scrollTo("testimonials")} className="text-left py-2">{t.nav.testimonials}</button>
+            <Link to="/blog" onClick={() => setOpen(false)} className="text-left py-2">Blog</Link>
             <div className="flex gap-2 pt-2 border-t border-border">
               {langs.map((l) => (
                 <button key={l.code} onClick={() => setLang(l.code)} className={`px-3 py-1 rounded ${lang === l.code ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
