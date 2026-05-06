@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Phone, MessageCircle, Send } from "lucide-react";
+import { trackConversion, trackEvent, CONVERSIONS } from "@/lib/gtag";
 
 const schema = z.object({
   customer_name: z.string().trim().min(2).max(100),
@@ -57,6 +58,8 @@ const BookingForm = () => {
       return;
     }
     toast.success(t.booking.success);
+    trackEvent("booking_submit", { transport_type: form.transport_type });
+    trackConversion(CONVERSIONS.booking, { event_category: "booking", transport_type: form.transport_type });
     const typeLabel = { persons: t.booking.typePersons, parcels: t.booking.typeParcels, auto: t.booking.typeAuto }[form.transport_type];
     const msg = `🚐 BGD-Trans — ${t.booking.title}%0A%0A👤 ${form.customer_name}%0A📞 ${form.phone}%0A📍 ${form.departure_city} → ${form.destination_city}%0A📦 ${typeLabel}%0A${form.message ? `💬 ${form.message}` : ""}`;
     window.location.href = `https://wa.me/40769129126?text=${msg}`;
@@ -130,11 +133,11 @@ const BookingForm = () => {
         </form>
 
         <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center text-primary-foreground/90">
-          <a href={`tel:${PHONE}`} className="inline-flex items-center gap-2 hover:text-accent transition-smooth">
+          <a href={`tel:${PHONE}`} onClick={() => { trackEvent("call_click", { location: "booking" }); trackConversion(CONVERSIONS.call); }} className="inline-flex items-center gap-2 hover:text-accent transition-smooth">
             <Phone className="h-5 w-5" /> {t.booking.orCall} <strong>{PHONE_DISPLAY}</strong>
           </a>
           <span className="hidden sm:inline">•</span>
-          <a href={WHATSAPP} target="_blank" rel="noopener" className="inline-flex items-center gap-2 hover:text-accent transition-smooth">
+          <a href={WHATSAPP} target="_blank" rel="noopener" onClick={() => { trackEvent("whatsapp_click", { location: "booking" }); trackConversion(CONVERSIONS.whatsapp); }} className="inline-flex items-center gap-2 hover:text-accent transition-smooth">
             <MessageCircle className="h-5 w-5" /> {t.booking.whatsappQuick}
           </a>
         </div>

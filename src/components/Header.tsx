@@ -49,7 +49,7 @@ const Header = () => {
             ))}
           </div>
           <Button asChild variant="default" size="sm" className="hidden sm:inline-flex bg-accent hover:bg-accent-glow text-accent-foreground">
-            <a href={`tel:${PHONE}`}><Phone className="h-4 w-4 mr-1" /> {PHONE_DISPLAY}</a>
+            <a href={`tel:${PHONE}`} onClick={() => { import("@/lib/gtag").then(m => { m.trackEvent("call_click", { location: "header" }); m.trackConversion(m.CONVERSIONS.call); }); }}><Phone className="h-4 w-4 mr-1" /> {PHONE_DISPLAY}</a>
           </Button>
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(!open)}>
             {open ? <X /> : <Menu />}
