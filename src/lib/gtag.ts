@@ -11,7 +11,7 @@ export const GOOGLE_ADS_ID = "AW-18141421830";
 // Replace with real conversion labels from Google Ads when available
 // Format: AW-18141421830/XXXXXXXXX
 export const CONVERSIONS = {
-  booking: `${GOOGLE_ADS_ID}`,
+  booking: `${GOOGLE_ADS_ID}/6wOHCLuFsKgcEIbCwMpD`,
   call: `${GOOGLE_ADS_ID}`,
   whatsapp: `${GOOGLE_ADS_ID}`,
 };

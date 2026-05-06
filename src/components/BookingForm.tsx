@@ -59,7 +59,7 @@ const BookingForm = () => {
     }
     toast.success(t.booking.success);
     trackEvent("booking_submit", { transport_type: form.transport_type });
-    trackConversion(CONVERSIONS.booking, { event_category: "booking", transport_type: form.transport_type });
+    trackConversion(CONVERSIONS.booking, { value: 1.0, currency: "RON", transport_type: form.transport_type });
     const typeLabel = { persons: t.booking.typePersons, parcels: t.booking.typeParcels, auto: t.booking.typeAuto }[form.transport_type];
     const msg = `🚐 BGD-Trans — ${t.booking.title}%0A%0A👤 ${form.customer_name}%0A📞 ${form.phone}%0A📍 ${form.departure_city} → ${form.destination_city}%0A📦 ${typeLabel}%0A${form.message ? `💬 ${form.message}` : ""}`;
     window.location.href = `https://wa.me/40769129126?text=${msg}`;
